@@ -21,10 +21,12 @@ test("source tree keeps stable entrypoints and separated responsibilities", asyn
     "web/src/main.tsx",
     "web/src/app/App.tsx",
     "web/src/features/album/AlbumApplication.tsx",
+    "web/src/features/about/MeIntroduction.tsx",
     "web/src/features/import/MobileUpload.tsx",
     "web/src/features/import/PhoneImport.tsx",
   ];
   await Promise.all(expected.map((file) => fs.access(path.join(root, file))));
+  await fs.access(path.join(root, "web/public/brand/me-hero.png"));
 
   const removed = [
     "server/app.mjs",

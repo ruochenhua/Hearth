@@ -25,6 +25,7 @@ import {
   Film,
   X,
   LockKeyhole,
+  Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -47,6 +48,7 @@ import ErrorNotice from "@/components/ErrorNotice";
 import Login from "@/features/auth/Login";
 import PhoneImport from "@/features/import/PhoneImport";
 import MobileUpload from "@/features/import/MobileUpload";
+import MeIntroduction from "@/features/about/MeIntroduction";
 
 type Media = {
   id: string;
@@ -99,7 +101,7 @@ type Job = {
   current_file: string | null;
   error: string | null;
 };
-type View = "library" | "albums" | "places" | "favorites" | "import" | "settings";
+type View = "library" | "albums" | "places" | "favorites" | "import" | "about" | "settings";
 type Query = {
   kind?: string;
   q?: string;
@@ -273,6 +275,14 @@ function Workspace({ onLogout }: { onLogout: () => void }) {
             </button>
             <button
               disabled={uploadBusy}
+              className={`nav-item ${view === "about" ? "active" : ""}`}
+              onClick={() => navigate("about")}
+            >
+              <Sparkles size={20} />
+              认识 Me
+            </button>
+            <button
+              disabled={uploadBusy}
               className={`nav-item ${view === "settings" ? "active" : ""}`}
               onClick={() => navigate("settings")}
             >
@@ -324,7 +334,14 @@ function Workspace({ onLogout }: { onLogout: () => void }) {
         </header>
         <main className="main-content">
           <ErrorNotice message={error} />
-          {view === "import" ? (
+          {view === "about" ? (
+            <MeIntroduction
+              albumName={name}
+              photos={stats?.photos || 0}
+              videos={stats?.videos || 0}
+              onImport={() => navigate("import")}
+            />
+          ) : view === "import" ? (
             <ImportCenter stats={stats} onChange={refresh} onBusy={setUploadBusy} />
           ) : view === "settings" ? (
             <SettingsView stats={stats} onChange={refresh} />

@@ -40,6 +40,12 @@
   --primary: #3f2a1a;
   --border: #ebe5e3;
   --radius: 12px;
+  --me-ink: #3f2a1a;
+  --me-clay: #b96745;
+  --me-sand: #f2e7d7;
+  --me-paper: #fbf7f0;
+  --me-line: #e7dbca;
+  --me-sage: #638671;
 }
 * {
   box-sizing: border-box;
@@ -1927,4 +1933,307 @@ progress::-moz-progress-bar {
   font-size: 12.5px;
   color: #94826e;
   margin: 2px 0 12px;
+}
+
+/* Me：把家庭相册从工具，讲成一个可以常回来看的地方。 */
+.me-page {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding-bottom: 30px;
+}
+.me-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.04fr) minmax(420px, 0.96fr);
+  min-height: 520px;
+  overflow: hidden;
+  border: 1px solid var(--me-line);
+  border-radius: 24px;
+  background: var(--me-paper);
+  box-shadow: 0 18px 50px #5a382015;
+}
+.me-hero-copy {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: clamp(34px, 5vw, 72px);
+}
+.me-kicker,
+.me-section-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--me-clay);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2.2px;
+}
+.me-hero h1 {
+  max-width: 620px;
+  margin: 25px 0 24px;
+  color: var(--me-ink);
+  font-family: "Noto Serif SC", "STSong", "Songti SC", serif;
+  font-size: clamp(38px, 4.4vw, 66px);
+  font-weight: 600;
+  letter-spacing: -0.06em;
+  line-height: 1.24;
+}
+.me-lede {
+  max-width: 580px;
+  color: #735b4f;
+  font-size: 17px;
+  line-height: 2;
+}
+.me-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 18px;
+  margin-top: 34px;
+}
+.me-security-note {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: #8a7769;
+  font-size: 13px;
+}
+.me-security-note svg {
+  color: var(--me-sage);
+}
+.me-hero-art {
+  position: relative;
+  min-height: 520px;
+  margin: 0;
+  overflow: hidden;
+  background: #c6a27e;
+}
+.me-hero-art::after {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, #3f2a1a38, transparent 24%, transparent 78%, #3f2a1a18);
+  content: "";
+  pointer-events: none;
+}
+.me-hero-art img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transition: transform 700ms ease;
+}
+.me-hero:hover .me-hero-art img {
+  transform: scale(1.025);
+}
+.me-hero-art figcaption {
+  position: absolute;
+  right: 24px;
+  bottom: 22px;
+  z-index: 1;
+  max-width: 170px;
+  color: #fffaf2;
+  font-family: "Noto Serif SC", "STSong", "Songti SC", serif;
+  font-size: 14px;
+  line-height: 1.7;
+  text-align: right;
+  text-shadow: 0 1px 14px #3f2a1a80;
+}
+.me-intro-row {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 62px 10px 28px;
+}
+.me-intro-row h2 {
+  margin-top: 12px;
+  color: var(--me-ink);
+  font-family: "Noto Serif SC", "STSong", "Songti SC", serif;
+  font-size: clamp(25px, 3vw, 38px);
+  font-weight: 600;
+  letter-spacing: -0.04em;
+}
+.me-counts {
+  display: flex;
+  gap: 25px;
+  padding-bottom: 4px;
+  color: #8a7769;
+  font-size: 14px;
+  white-space: nowrap;
+}
+.me-counts span + span {
+  border-left: 1px solid var(--me-line);
+  padding-left: 25px;
+}
+.me-counts b {
+  margin-right: 4px;
+  color: var(--me-clay);
+  font-family: Georgia, serif;
+  font-size: 27px;
+  font-weight: 500;
+}
+.me-values {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+.me-value {
+  min-height: 250px;
+  padding: 28px 29px 30px;
+  border: 1px solid var(--me-line);
+  border-radius: 16px;
+  background: #fffdf9;
+  transition: border-color 220ms ease, transform 220ms ease, box-shadow 220ms ease;
+}
+.me-value:hover {
+  border-color: #d4b899;
+  box-shadow: 0 13px 28px #5a382012;
+  transform: translateY(-3px);
+}
+.me-value-icon {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  margin-bottom: 25px;
+  border-radius: 12px;
+  background: var(--me-sand);
+  color: var(--me-clay);
+}
+.me-value .me-section-kicker {
+  color: #9a8576;
+  font-size: 10px;
+  letter-spacing: 1.7px;
+}
+.me-value h3 {
+  margin: 10px 0 8px;
+  color: var(--me-ink);
+  font-family: "Noto Serif SC", "STSong", "Songti SC", serif;
+  font-size: 24px;
+  font-weight: 600;
+}
+.me-value p {
+  max-width: 30em;
+  color: #806c5e;
+  font-size: 15px;
+  line-height: 1.9;
+}
+.me-closing {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 30px;
+  min-height: 210px;
+  margin-top: 14px;
+  padding: 38px 44px;
+  border-radius: 16px;
+  background: var(--me-ink);
+  color: #f9f0e4;
+}
+.me-closing .me-section-kicker {
+  color: #d8a57d;
+}
+.me-closing h2 {
+  max-width: 600px;
+  margin: 12px 0 8px;
+  font-family: "Noto Serif SC", "STSong", "Songti SC", serif;
+  font-size: clamp(24px, 3vw, 36px);
+  font-weight: 500;
+  letter-spacing: -0.04em;
+  line-height: 1.45;
+}
+.me-closing p {
+  color: #d9c6b7;
+  font-size: 15px;
+}
+.me-closing-mark {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 125px;
+  height: 125px;
+  border: 1px solid #c9987480;
+  border-radius: 50%;
+  transform: rotate(-8deg);
+}
+.me-closing-mark span {
+  font-family: Georgia, serif;
+  font-size: 38px;
+  font-style: italic;
+  line-height: 1;
+}
+.me-closing-mark small {
+  margin-top: 9px;
+  color: #d8a57d;
+  font-size: 10px;
+  letter-spacing: 2px;
+}
+@media (max-width: 1180px) {
+  .me-hero {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+  .me-hero-art {
+    min-height: 390px;
+  }
+  .me-hero h1 {
+    font-size: clamp(38px, 4.4vw, 58px);
+  }
+}
+@media (max-width: 760px) {
+  .me-page {
+    padding-bottom: 10px;
+  }
+  .me-hero {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    border-radius: 18px;
+  }
+  .me-hero-copy {
+    padding: 34px 25px 30px;
+  }
+  .me-hero h1 {
+    margin: 20px 0 18px;
+    font-size: 38px;
+  }
+  .me-lede {
+    font-size: 16px;
+    line-height: 1.9;
+  }
+  .me-actions {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 13px;
+    margin-top: 25px;
+  }
+  .me-hero-art {
+    min-height: 280px;
+  }
+  .me-intro-row {
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 43px 3px 22px;
+  }
+  .me-counts {
+    gap: 18px;
+  }
+  .me-counts span + span {
+    padding-left: 18px;
+  }
+  .me-values {
+    grid-template-columns: 1fr;
+  }
+  .me-value {
+    min-height: 0;
+  }
+  .me-closing {
+    align-items: flex-start;
+    flex-direction: column;
+    margin-top: 14px;
+    padding: 30px 25px;
+  }
 }
