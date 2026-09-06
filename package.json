@@ -1,0 +1,26 @@
+{
+  "name": "mymoment",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24.13.0 <25"
+  },
+  "scripts": {
+    "setup": "node scripts/setup.mjs",
+    "dev": "node --env-file=.env --watch server/index.mjs",
+    "start": "node --env-file=.env server/index.mjs",
+    "build": "npm --prefix web run build",
+    "test": "node --test --test-concurrency=1 tests/*.test.mjs",
+    "android": "node --env-file=.env scripts/android-import.mjs",
+    "backup": "node --env-file=.env scripts/backup.mjs"
+  },
+  "dependencies": {
+    "exifr": "7.1.3",
+    "express": "5.1.0",
+    "express-rate-limit": "8.7.0",
+    "helmet": "8.1.0",
+    "multer": "2.3.0",
+    "sharp": "0.35.4"
+  }
+}

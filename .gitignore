@@ -1,0 +1,15 @@
+node_modules/
+.npm-cache/
+.docker-local/
+.env
+.local-access.txt
+data/
+inbox/
+backups/
+test-output/
+web/dist/
+*.log
+*.tsbuildinfo
+.lockfix/
+web/.openai/
+nul

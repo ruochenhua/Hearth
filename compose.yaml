@@ -1,0 +1,38 @@
+name: mymoment
+services:
+  album:
+    build:
+      context: .
+      args:
+        NODE_IMAGE: ${NODE_IMAGE:-node:24-bookworm-slim}
+    image: mymoment:local
+    restart: unless-stopped
+    ports:
+      - "${PORT:-3080}:3080"
+    environment:
+      ALBUM_PASSWORD: ${ALBUM_PASSWORD:?Run npm run setup first}
+      COOKIE_SECURE: ${COOKIE_SECURE:-false}
+      TZ: ${TZ:-Asia/Shanghai}
+      DATA_DIR: /data
+      IMPORT_DIR: /import
+      PORT: 3080
+    volumes:
+      - ${DATA_DIR:-./data}:/data
+      - ${IMPORT_DIR:-./inbox}:/import:ro
+    read_only: true
+    tmpfs:
+      - /tmp:size=128m,mode=1777
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    stop_grace_period: 30s
+    healthcheck:
+      test: [CMD, node, -e, "fetch('http://127.0.0.1:3080/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: '3'
