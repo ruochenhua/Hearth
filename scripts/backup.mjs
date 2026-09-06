@@ -43,7 +43,7 @@ try {
     await fs.copyFile(".env", path.join(destination, ".env"));
     await fs.writeFile(
       path.join(destination, "RESTORE.txt"),
-      "MyMoment 完整备份。停止服务，将 data 目录复制到空的目标数据目录，恢复 .env（必要时修改路径），再启动相同或更新版本。不要覆盖正在运行的相册。\n",
+      "围炉（Hearth）完整备份。停止服务，将 data 目录复制到空的目标数据目录，恢复 .env（必要时修改路径），再启动相同或更新版本。不要覆盖正在运行的相册。\n",
     );
     db.exec("ROLLBACK");
   } finally {

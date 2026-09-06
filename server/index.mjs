@@ -10,7 +10,7 @@ const runtime = await createApplication({
 });
 const port = Number(process.env.PORT || 3080);
 const server = runtime.app.listen(port, process.env.HOST || "0.0.0.0", () =>
-  console.log(`MyMoment ready: http://localhost:${port}`),
+  console.log(`Hearth ready: http://localhost:${port}`),
 );
 server.requestTimeout = 0; // Large video transfers may take longer than Node's default five minutes.
 let stopping = false;

@@ -12,7 +12,9 @@ Set-Location -LiteralPath $projectRoot
 
 # This launcher elevates only the setup step. The firewall rule is narrow:
 # TCP 3080 from the local subnet, never a public port-forward rule.
-$ruleName = 'MyMoment LAN album (TCP 3080)'
+$ruleName = 'Hearth LAN album (TCP 3080)'
+$legacyRuleName = 'MyMoment LAN album (TCP 3080)'
+Get-NetFirewallRule -DisplayName $legacyRuleName -ErrorAction SilentlyContinue | Remove-NetFirewallRule
 $route = Get-NetRoute -DestinationPrefix '0.0.0.0/0' -ErrorAction SilentlyContinue | Sort-Object RouteMetric | Select-Object -First 1
 $wifiAddress = if ($route) { Get-NetIPAddress -InterfaceIndex $route.InterfaceIndex -AddressFamily IPv4 -ErrorAction SilentlyContinue | Where-Object { $_.IPAddress -notmatch '^169\.254\.' } | Select-Object -First 1 } else { Get-NetIPAddress -AddressFamily IPv4 -Type Unicast -ErrorAction SilentlyContinue | Where-Object { $_.IPAddress -match '^192\.168\.' } | Select-Object -First 1 }
 $remoteAddresses = @('LocalSubnet', '10.0.0.0/8', '172.16.0.0/12', '192.168.0.0/16')
@@ -41,7 +43,7 @@ if ($needsFirewall -and $ruleExists) {
   $ruleExists = $false
 }
 if (-not $ruleExists) {
-  New-NetFirewallRule -DisplayName $ruleName -Description 'Allow MyMoment from the local subnet only. No public port forwarding.' -Direction Inbound -Action Allow -Protocol TCP -LocalPort 3080 -Profile Any -RemoteAddress $remoteAddresses | Out-Null
+  New-NetFirewallRule -DisplayName $ruleName -Description 'Allow Hearth from the local subnet only. No public port forwarding.' -Direction Inbound -Action Allow -Protocol TCP -LocalPort 3080 -Profile Any -RemoteAddress $remoteAddresses | Out-Null
 }
 
 if (-not (Get-Command docker.exe -ErrorAction SilentlyContinue)) {
@@ -67,7 +69,7 @@ if (-not $dockerProbe.Ready) {
 $upArgs = @('compose','up','-d','--build','--wait','--wait-timeout','90')
 if ($ForceRecreate) { $upArgs += '--force-recreate' }
 & docker @upArgs
-if ($LASTEXITCODE -ne 0) { throw 'The album container failed to start. Check the MyMoment logs in Docker Desktop.' }
+if ($LASTEXITCODE -ne 0) { throw '相册容器启动失败，请在 Docker Desktop 中查看围炉日志。' }
 
 $healthy = $false
 for ($i = 0; $i -lt 30; $i++) {
@@ -83,7 +85,7 @@ $wifi = Get-NetIPAddress -AddressFamily IPv4 -Type Unicast -ErrorAction Silently
   Where-Object { $_.IPAddress -match '^192\.168\.' -and $_.IPAddress -notmatch '\.1$' } |
   Select-Object -First 1 -ExpandProperty IPAddress
 Write-Host ''
-Write-Host 'MyMoment is ready.' -ForegroundColor Green
+Write-Host '围炉已就绪。' -ForegroundColor Green
 Write-Host 'Local: http://localhost:3080'
 if ($wifi) { Write-Host "LAN: http://${wifi}:3080" }
 Write-Host 'Firewall rule: TCP 3080 is allowed from the local subnet only.'

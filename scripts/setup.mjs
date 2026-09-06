@@ -10,7 +10,7 @@ try {
   );
   await fs.writeFile(
     ".local-access.txt",
-    `MyMoment 本地访问\n\n地址：http://localhost:3080\n相册密码：${password}\n\n同一局域网可使用 http://电脑局域网IP:3080\n此文件及 .env 包含私人密码，请勿分享或提交到版本库。\n`,
+    `围炉（Hearth）本地访问\n\n地址：http://localhost:3080\n相册密码：${password}\n\n同一局域网可使用 http://电脑局域网IP:3080\n此文件及 .env 包含私人密码，请勿分享或提交到版本库。\n`,
     { flag: "wx", mode: 0o600 },
   );
   await fs.mkdir("inbox", { recursive: true });

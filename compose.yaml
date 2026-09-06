@@ -1,11 +1,11 @@
-name: mymoment
+name: hearth
 services:
   album:
     build:
       context: .
       args:
         NODE_IMAGE: ${NODE_IMAGE:-node:24-bookworm-slim}
-    image: mymoment:local
+    image: hearth:local
     restart: unless-stopped
     ports:
       - "${PORT:-3080}:3080"

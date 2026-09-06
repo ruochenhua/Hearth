@@ -20,7 +20,7 @@ function Ensure-Config {
   $password = New-TestPassword
   $text = @("ALBUM_PASSWORD=$password",'PORT=3080','HOST=0.0.0.0','DATA_DIR=./data','IMPORT_DIR=./inbox','TZ=Asia/Shanghai','COOKIE_SECURE=false','NODE_IMAGE=public.ecr.aws/docker/library/node:24-bookworm-slim') -join "`r`n"
   [IO.File]::WriteAllText($envPath,$text,(New-Object Text.UTF8Encoding($false)))
-  [IO.File]::WriteAllText($accessPath,("MyMoment local access`r`n`r`nLocal: http://localhost:3080`r`nPassword: $password`r`n`r`nLAN access uses the computer IPv4 address and port 3080.`r`nKeep this file private.`r`n"),(New-Object Text.UTF8Encoding($false)))
+  [IO.File]::WriteAllText($accessPath,("围炉 Hearth local access`r`n`r`nLocal: http://localhost:3080`r`nPassword: $password`r`n`r`nLAN access uses the computer IPv4 address and port 3080.`r`nKeep this file private.`r`n"),(New-Object Text.UTF8Encoding($false)))
   return $true
 }
 function Invoke-Hidden($file,$arguments) { Start-Process -FilePath $file -ArgumentList $arguments -WindowStyle Hidden }
@@ -31,7 +31,7 @@ function Get-LanUrl {
 }
 
 $form = New-Object Windows.Forms.Form
-$form.Text = 'MyMoment Control Center'
+$form.Text = '围炉 Hearth Control Center'
 $form.StartPosition = 'CenterScreen'
 $form.Size = New-Object Drawing.Size(560,400)
 $form.MinimumSize = New-Object Drawing.Size(560,400)
@@ -39,7 +39,7 @@ $form.BackColor = [Drawing.Color]::FromArgb(247,249,249)
 $form.Font = New-Object Drawing.Font('Segoe UI',10)
 
 $title = New-Object Windows.Forms.Label
-$title.Text = 'MyMoment'
+$title.Text = '围炉 Hearth'
 $title.Font = New-Object Drawing.Font('Segoe UI',22,[Drawing.FontStyle]::Bold)
 $title.ForeColor = [Drawing.Color]::FromArgb(23,63,75)
 $title.Location = New-Object Drawing.Point(28,22); $title.AutoSize = $true
@@ -101,23 +101,23 @@ $timer.Start()
 $start.Add_Click({
   try {
     $created = Ensure-Config
-    if ($created) { [Windows.Forms.MessageBox]::Show($form,'A secure album password was created and saved in .local-access.txt.','MyMoment') | Out-Null }
+    if ($created) { [Windows.Forms.MessageBox]::Show($form,'A secure album password was created and saved in .local-access.txt.','围炉 Hearth') | Out-Null }
     Invoke-Hidden 'powershell.exe' "-NoProfile -ExecutionPolicy Bypass -File `"$startScript`" -ForceRecreate -NoBrowser -NoPause"
     $status.Text = 'Status: starting...'; $start.Enabled = $false
-  } catch { [Windows.Forms.MessageBox]::Show($form,$_.Exception.Message,'MyMoment error') | Out-Null }
+  } catch { [Windows.Forms.MessageBox]::Show($form,$_.Exception.Message,'围炉 Hearth error') | Out-Null }
 })
 $stop.Add_Click({
   try { Invoke-Hidden 'powershell.exe' "-NoProfile -ExecutionPolicy Bypass -File `"$stopScript`""; $status.Text = 'Status: stopping...'; $stop.Enabled = $false }
-  catch { [Windows.Forms.MessageBox]::Show($form,$_.Exception.Message,'MyMoment error') | Out-Null }
+  catch { [Windows.Forms.MessageBox]::Show($form,$_.Exception.Message,'围炉 Hearth error') | Out-Null }
 })
 $open.Add_Click({ Start-Process 'http://localhost:3080' })
 $repair.Add_Click({
   try { Invoke-Hidden 'powershell.exe' "-NoProfile -ExecutionPolicy Bypass -File `"$startScript`" -RepairFirewall -NoBrowser -NoPause"; $status.Text = 'Status: repairing LAN access...' }
-  catch { [Windows.Forms.MessageBox]::Show($form,$_.Exception.Message,'MyMoment error') | Out-Null }
+  catch { [Windows.Forms.MessageBox]::Show($form,$_.Exception.Message,'围炉 Hearth error') | Out-Null }
 })
 $details.Add_Click({
-  if (Test-Path -LiteralPath $accessPath) { [Windows.Forms.MessageBox]::Show($form,(Get-Content -Raw $accessPath),'MyMoment login details') | Out-Null }
-  else { [Windows.Forms.MessageBox]::Show($form,'Start the album once to create the login details.','MyMoment') | Out-Null }
+  if (Test-Path -LiteralPath $accessPath) { [Windows.Forms.MessageBox]::Show($form,(Get-Content -Raw $accessPath),'围炉 Hearth login details') | Out-Null }
+  else { [Windows.Forms.MessageBox]::Show($form,'Start the album once to create the login details.','围炉 Hearth') | Out-Null }
 })
 $form.Add_FormClosed({ $timer.Stop() })
 Update-Status

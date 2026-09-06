@@ -10,7 +10,7 @@ test("assertValidSource 校验手机目录", () => {
 
 test("runAndroidImport 在 adb 缺失时报友好错误", async () => {
   await assert.rejects(
-    runAndroidImport({ adbPath: "mymoment-definitely-missing-adb" }),
+    runAndroidImport({ adbPath: "hearth-definitely-missing-adb" }),
     /找不到 adb/,
   );
 });

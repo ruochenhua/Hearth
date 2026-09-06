@@ -96,8 +96,8 @@ export async function createApplication(config) {
     const cookie = req.headers.cookie
       ?.split(";")
       .map((s) => s.trim())
-      .find((s) => s.startsWith("mymoment="))
-      ?.slice(9);
+      .find((s) => s.startsWith("hearth="))
+      ?.slice(7);
     if (cookie && /^[a-f0-9]{64}$/.test(cookie))
       req.session = db
         .prepare("SELECT token FROM sessions WHERE token=? AND expires>?")
@@ -130,7 +130,7 @@ export async function createApplication(config) {
         Date.now() + 7 * 86400000,
       );
       res
-        .cookie("mymoment", token, {
+        .cookie("hearth", token, {
           httpOnly: true,
           sameSite: "strict",
           secure: Boolean(config.secureCookies),
@@ -144,7 +144,7 @@ export async function createApplication(config) {
   app.post("/api/logout", (req, res) => {
     db.prepare("DELETE FROM sessions WHERE token=?").run(req.session.token);
     res
-      .clearCookie("mymoment", {
+      .clearCookie("hearth", {
         path: "/",
         httpOnly: true,
         sameSite: "strict",

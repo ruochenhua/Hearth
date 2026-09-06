@@ -143,7 +143,7 @@ function Brand() {
         <Camera size={23} />
       </span>
       <div>
-        MyMoment<small>家庭影像馆</small>
+        围炉<small>Hearth · 家庭影像馆</small>
       </div>
     </div>
   );
@@ -486,7 +486,7 @@ function Workspace({ onLogout }: { onLogout: () => void }) {
           )}
         </main>
         <footer className="page-footer">
-          <span>MyMoment</span>家里的回忆，随时可见。
+          <span>围炉 Hearth</span>家里的回忆，随时可见。
           <span>LOCAL STORAGE · v{stats?.version || "0.1.0"}</span>
         </footer>
       </div>
@@ -948,7 +948,7 @@ function MediaViewer({
     [comments, setComments] = useState<
       { id: number; author: string; body: string; created_at: string }[]
     >([]),
-    [author, setAuthor] = useState(() => localStorage.getItem("mymoment-author") || ""),
+    [author, setAuthor] = useState(() => localStorage.getItem("hearth-author") || ""),
     [body, setBody] = useState(""),
     [error, setError] = useState(""),
     [busy, setBusy] = useState(false),
@@ -992,7 +992,7 @@ function MediaViewer({
     setError("");
     try {
       await api(`/comments/${m.id}`, { method: "POST", body: JSON.stringify({ author, body }) });
-      localStorage.setItem("mymoment-author", author);
+      localStorage.setItem("hearth-author", author);
       setBody("");
       await loadComments();
     } catch (e) {
@@ -1435,7 +1435,7 @@ function ImportCenter({
             onClick={() =>
               window.open(
                 `${window.location.origin}/?assistant=phone`,
-                "mymoment-phone-import",
+                "hearth-phone-import",
                 "popup,width=560,height=780",
               )
             }

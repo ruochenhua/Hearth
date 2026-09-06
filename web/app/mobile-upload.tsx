@@ -60,7 +60,7 @@ export default function MobileUpload() {
   }, []);
 
   useEffect(() => {
-    document.title = "MyMoment · 手机快传";
+    document.title = "围炉 · 手机快传";
     if (!isMobile)
       fetch("/api/network", { headers: { "X-MyMoment": "1" } })
         .then(async (r): Promise<{ addresses: string[] }> =>

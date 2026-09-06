@@ -33,10 +33,10 @@ if (!(await isReady())) {
   while (Date.now() < deadline && !(await isReady())) await new Promise(resolve => setTimeout(resolve, 250));
 }
 
-if (!(await isReady())) throw new Error(`MyMoment control center did not start. Open ${url} manually to inspect it.`);
+if (!(await isReady())) throw new Error(`围炉控制面板启动失败，请手动打开 ${url} 检查。`);
 if (process.env.MYMOMENT_AUTOSTART === '1') {
   const response = await fetch(`${url}/api/start`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' });
   const result = await response.json();
-  if (!response.ok) throw new Error(result.error || 'MyMoment album failed to start.');
+  if (!response.ok) throw new Error(result.error || '围炉相册启动失败。');
 }
 openBrowser();

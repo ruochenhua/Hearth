@@ -111,7 +111,7 @@ export default function PhoneImport() {
   }, []);
 
   useEffect(() => {
-    document.title = "MyMoment · 手机导入";
+    document.title = "围炉 · 手机导入";
     return () => thumbsRef.current.forEach((t) => URL.revokeObjectURL(t.url));
   }, []);
 
@@ -130,7 +130,7 @@ export default function PhoneImport() {
       const transport = await AdbDaemonTransport.authenticate({
         serial: device.serial,
         connection,
-        credentialStore: new AdbWebCredentialStore("MyMoment"),
+        credentialStore: new AdbWebCredentialStore("Hearth"),
       });
       adbRef.current = new Adb(transport);
       deviceRef.current = device;

@@ -3,7 +3,7 @@ setlocal
 cd /d "%~dp0"
 node scripts\stop-album.mjs
 if errorlevel 1 (
-  echo MyMoment stop failed. Check Docker Desktop.
+  echo 围炉停止失败，请检查 Docker Desktop。
   pause
   exit /b 1
 )
