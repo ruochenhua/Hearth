@@ -3,10 +3,10 @@ import assert from "node:assert/strict";
 import fs from "node:fs/promises";
 import path from "node:path";
 import sharp from "sharp";
-import { createApplication } from "../server/app.mjs";
-import { runProcess, chooseDate } from "../server/importer.mjs";
-import { parseArgs, quoteRemote } from "../scripts/android-import.mjs";
-import { locate } from "../server/geo.mjs";
+import { createApplication } from "../server/src/app.mjs";
+import { runProcess, chooseDate } from "../server/src/importer.mjs";
+import { parseArgs, quoteRemote } from "../scripts/import/android-import.mjs";
+import { locate } from "../server/src/geo.mjs";
 import { execFile } from "node:child_process";
 import { createHash } from "node:crypto";
 
@@ -50,6 +50,7 @@ before(async () => {
     password,
     dataDir: path.join(root, "data"),
     importDir: path.join(root, "inbox"),
+    networkAddresses: ["192.168.31.9", "not-an-ip"],
   });
   runtime.db.prepare("UPDATE settings SET value='false' WHERE key='autoImport'").run();
   server = runtime.app.listen(0, "127.0.0.1");
@@ -69,6 +70,13 @@ after(async () => {
 });
 
 test("private data and uploads require a session; write requests require CSRF header", async () => {
+  const health = await fetch(base + "/api/health");
+  assert.equal(health.status, 200);
+  assert.deepEqual(await health.json(), { status: "ok" });
+  assert.deepEqual(await (await fetch(base + "/api/session")).json(), {
+    authenticated: false,
+    albumName: "我们的小日子",
+  });
   assert.equal((await fetch(base + "/api/media")).status, 401);
   assert.equal((await fetch(base + "/api/import/upload", { method: "POST" })).status, 403);
   assert.equal((await fetch(base + "/api/settings")).status, 401);
@@ -78,6 +86,30 @@ test("private data and uploads require a session; write requests require CSRF he
   assert.match(login.headers.get("set-cookie"), /HttpOnly/);
   assert.match(login.headers.get("set-cookie"), /SameSite=Strict/);
   cookie = login.headers.get("set-cookie").split(";")[0];
+  assert.equal((await fetch(base + "/api/does-not-exist", { headers: headers() })).status, 404);
+  assert.equal((await fetch(base + "/api/media/missing", { headers: headers() })).status, 404);
+  assert.equal(
+    (
+      await fetch(base + "/api/import/upload", {
+        method: "POST",
+        headers: headers(),
+        body: new FormData(),
+      })
+    ).status,
+    400,
+  );
+  const invalidUpload = new FormData();
+  invalidUpload.append("file", new Blob(["not media"]), "notes.txt");
+  assert.equal(
+    (
+      await fetch(base + "/api/import/upload", {
+        method: "POST",
+        headers: headers(),
+        body: invalidUpload,
+      })
+    ).status,
+    400,
+  );
   const denied = await fetch(base + "/api/settings", {
     method: "PATCH",
     headers: { ...headers(), Origin: "http://other-host", "Content-Type": "application/json" },
@@ -143,6 +175,7 @@ test("network endpoint requires a session and lists LAN IPv4 addresses", async (
   assert.equal(res.status, 200);
   const { addresses } = await res.json();
   assert.ok(Array.isArray(addresses));
+  assert.ok(addresses.includes("192.168.31.9"));
   assert.ok(addresses.every((a) => /^\d{1,3}(\.\d{1,3}){3}$/.test(a)));
   assert.ok(!addresses.includes("127.0.0.1"));
 });
@@ -258,7 +291,7 @@ test("failed import can be retried after fixing its staged source", async () => 
 test("restart resumes interrupted work, retains comments, and password rotation invalidates sessions", async () => {
   await new Promise((r) => server.close(r));
   await runtime.close();
-  const { openDatabase } = await import("../server/db.mjs");
+  const { openDatabase } = await import("../server/src/db.mjs");
   const db = openDatabase(path.join(root, "data"));
   const source = path.join(root, "data", "uploads", "recovered.jpg");
   await fs.writeFile(source, photo);
@@ -305,7 +338,7 @@ test("complete offline backup passes integrity check and restores media and comm
   await new Promise((resolve, reject) =>
     execFile(
       process.execPath,
-      [path.resolve("scripts/backup.mjs"), "--local-stopped"],
+      [path.resolve("scripts/maintenance/backup.mjs"), "--local-stopped"],
       { cwd: root, env: { ...process.env, DATA_DIR: path.join(root, "data") }, windowsHide: true },
       (e, out, err) => (e ? reject(new Error(out + err)) : resolve(out)),
     ),

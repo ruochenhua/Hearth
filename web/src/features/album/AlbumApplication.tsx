@@ -1,6 +1,5 @@
-import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
-  Camera,
   Images,
   Heart,
   MapPin,
@@ -42,8 +41,12 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { registerImportTools } from "@/lib/agent-tools";
-import PhoneImport from "./phone-import";
-import MobileUpload from "./mobile-upload";
+import { api, errorText } from "@/lib/api";
+import Brand from "@/components/Brand";
+import ErrorNotice from "@/components/ErrorNotice";
+import Login from "@/features/auth/Login";
+import PhoneImport from "@/features/import/PhoneImport";
+import MobileUpload from "@/features/import/MobileUpload";
 
 type Media = {
   id: string;
@@ -105,6 +108,7 @@ type Query = {
   place?: string;
   favorite?: string;
 };
+type FormSubmitEvent = { preventDefault: () => void };
 const bytes = (n: number) =>
   n >= 1024 ** 3
     ? `${(n / 1024 ** 3).toFixed(1)} GB`
@@ -122,42 +126,7 @@ const clock = (s: string) =>
   });
 const duration = (s: number | null) =>
   s ? `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, "0")}` : "视频";
-const errorText = (e: unknown) => (e instanceof Error ? e.message : "操作失败，请重试");
-async function api<T>(url: string, options: RequestInit = {}): Promise<T> {
-  const response = await fetch("/api" + url, {
-    ...options,
-    headers: { "Content-Type": "application/json", "X-MyMoment": "1", ...options.headers },
-  });
-  const body = (await response.json()) as T & { error?: string };
-  if (!response.ok) {
-    if (response.status === 401 && url != "/login")
-      window.dispatchEvent(new Event("session-expired"));
-    throw new Error(body.error || "请求失败");
-  }
-  return body;
-}
-function Brand() {
-  return (
-    <div className="brand">
-      <span className="brand-mark">
-        <Camera size={23} />
-      </span>
-      <div>
-        围炉<small>Hearth · 家庭影像馆</small>
-      </div>
-    </div>
-  );
-}
-function ErrorNotice({ message }: { message: string }) {
-  return message ? (
-    <div className="notice error" role="alert">
-      <AlertCircle size={18} />
-      <span>{message}</span>
-    </div>
-  ) : null;
-}
-
-export default function App() {
+export default function AlbumApplication() {
   const [session, setSession] = useState<{ authenticated: boolean; albumName: string } | null>(
       null,
     ),
@@ -173,7 +142,7 @@ export default function App() {
     [],
   );
   useEffect(() => {
-    refreshSession();
+    void refreshSession();
     const expired = () => setSession((s) => (s ? { ...s, authenticated: false } : s));
     window.addEventListener("session-expired", expired);
     return () => window.removeEventListener("session-expired", expired);
@@ -203,69 +172,6 @@ export default function App() {
     <SidebarProvider>
       <Workspace onLogout={refreshSession} />
     </SidebarProvider>
-  );
-}
-function Login({ name, onLogin }: { name: string; onLogin: () => void }) {
-  const [password, setPassword] = useState(""),
-    [error, setError] = useState(""),
-    [busy, setBusy] = useState(false);
-  async function submit(e: FormEvent) {
-    e.preventDefault();
-    setBusy(true);
-    setError("");
-    try {
-      await api("/login", { method: "POST", body: JSON.stringify({ password }) });
-      onLogin();
-    } catch (e) {
-      setError(errorText(e));
-    } finally {
-      setBusy(false);
-    }
-  }
-  return (
-    <main className="login-page">
-      <section className="login-story">
-        <Brand />
-        <div>
-          <span className="eyebrow">OUR FAMILY ARCHIVE</span>
-          <h1>
-            把日子留住，
-            <br />
-            慢慢回看。
-          </h1>
-          <p>
-            那些一起走过的路、过过的生日，
-            <br />
-            还有平凡却闪闪发光的一天。
-          </p>
-        </div>
-        <div className="login-caption">
-          <LockKeyhole size={17} />
-          回忆保存在家里的电脑上
-        </div>
-      </section>
-      <section className="login-form">
-        <span className="eyebrow">WELCOME HOME</span>
-        <h2>{name}</h2>
-        <p>输入相册密码，看看我们最近的故事。</p>
-        <form onSubmit={submit}>
-          <label htmlFor="password">相册密码</label>
-          <Input
-            id="password"
-            type="password"
-            autoComplete="current-password"
-            required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <ErrorNotice message={error} />
-          <Button type="submit" disabled={busy}>
-            {busy ? <LoaderCircle className="spin" /> : <ArrowUpRight />}进入相册
-          </Button>
-        </form>
-        <small>首次使用？密码保存在电脑项目目录的 .local-access.txt 中。</small>
-      </section>
-    </main>
   );
 }
 function Workspace({ onLogout }: { onLogout: () => void }) {
@@ -307,7 +213,7 @@ function Workspace({ onLogout }: { onLogout: () => void }) {
         .catch((e) => {
           if (live) setError(errorText(e));
         });
-    load();
+    void load();
     const timer = setInterval(load, 5000);
     return () => {
       live = false;
@@ -600,7 +506,7 @@ function Albums({
   useEffect(() => {
     let live = true;
     setLoading(true);
-    api<{ items: typeof items }>(`/albums?group=${group}`)
+    void api<{ items: typeof items }>(`/albums?group=${group}`)
       .then((r) => {
         if (live) {
           setItems(r.items);
@@ -961,7 +867,7 @@ function MediaViewer({
     [media.id],
   );
   useEffect(() => {
-    loadComments();
+    void loadComments();
   }, [loadComments]);
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -986,7 +892,7 @@ function MediaViewer({
       setBusy(false);
     }
   }
-  async function comment(e: FormEvent) {
+  async function comment(e: FormSubmitEvent) {
     e.preventDefault();
     setBusy(true);
     setError("");
@@ -1017,6 +923,7 @@ function MediaViewer({
             <video
               src={m.previewUrl}
               poster={m.thumbnailUrl || undefined}
+              aria-label={m.name}
               controls
               playsInline
               preload="metadata"
@@ -1078,9 +985,9 @@ function MediaViewer({
         {m.warning && <div className="notice warning">{m.warning}</div>}
         <form
           className="metadata-form"
-          onSubmit={(e) => {
+          onSubmit={async (e) => {
             e.preventDefault();
-            save({
+            await save({
               tags: tags
                 .split(/[,，]/)
                 .map((t) => t.trim())
@@ -1220,7 +1127,7 @@ function ImportCenter({
     [],
   );
   useEffect(() => {
-    load();
+    void load();
     const timer = setInterval(load, 3000);
     return () => clearInterval(timer);
   }, [load]);
@@ -1228,7 +1135,6 @@ function ImportCenter({
     const handler = (e: BeforeUnloadEvent) => {
       if (busyRef.current) {
         e.preventDefault();
-        e.returnValue = "";
       }
     };
     window.addEventListener("beforeunload", handler);
@@ -1264,7 +1170,8 @@ function ImportCenter({
               try {
                 const r = JSON.parse(xhr.responseText);
                 if (xhr.status === 401) window.dispatchEvent(new Event("session-expired"));
-                xhr.status < 300 ? resolve() : reject(new Error(r.error || "上传失败"));
+                if (xhr.status < 300) resolve();
+                else reject(new Error(r.error || "上传失败"));
               } catch {
                 reject(new Error("服务器返回异常"));
               }
@@ -1288,7 +1195,7 @@ function ImportCenter({
         `${ok} 个文件已上传并加入整理队列${failures.length ? `，${failures.length} 个上传失败` : ""}。`,
       );
       setFailed(failures);
-      load();
+      void load();
       onChange();
     }
   }
@@ -1298,7 +1205,7 @@ function ImportCenter({
     try {
       const r = await api<{ message: string }>("/import/scan", { method: "POST" });
       setMessage(r.message);
-      load();
+      void load();
       onChange();
     } catch (e) {
       setError(errorText(e));
@@ -1326,9 +1233,7 @@ function ImportCenter({
       </div>
       <ErrorNotice message={error} />
       {message && (
-        <div className="notice" role="status">
-          {message}
-        </div>
+        <output className="notice">{message}</output>
       )}
       <div className="import-grid">
         <section
@@ -1336,7 +1241,7 @@ function ImportCenter({
           onDragOver={(e) => e.preventDefault()}
           onDrop={(e) => {
             e.preventDefault();
-            uploadFiles(Array.from(e.dataTransfer.files));
+            void uploadFiles(Array.from(e.dataTransfer.files));
           }}
         >
           <span className="upload-icon">
@@ -1365,7 +1270,7 @@ function ImportCenter({
             multiple
             accept="image/*,video/*,.heic,.heif,.mkv,.avi"
             onChange={(e) => {
-              uploadFiles(Array.from(e.target.files || []));
+              void uploadFiles(Array.from(e.target.files || []));
               e.target.value = "";
             }}
           />
@@ -1376,7 +1281,7 @@ function ImportCenter({
             multiple
             {...({ webkitdirectory: "" } as object)}
             onChange={(e) => {
-              uploadFiles(Array.from(e.target.files || []));
+              void uploadFiles(Array.from(e.target.files || []));
               e.target.value = "";
             }}
           />
@@ -1391,10 +1296,10 @@ function ImportCenter({
             </div>
           )}
           {summary && (
-            <div className="notice" role="status">
+            <output className="notice">
               <Check size={17} />
               {summary}
-            </div>
+            </output>
           )}
           {failed.length > 0 && (
             <div className="upload-failures">
@@ -1520,7 +1425,7 @@ function ImportCenter({
                     onClick={async () => {
                       try {
                         await api(`/jobs/${job.id}/retry`, { method: "POST" });
-                        load();
+                        void load();
                       } catch (e) {
                         setError(errorText(e));
                       }
@@ -1560,11 +1465,11 @@ function SettingsView({ stats, onChange }: { stats: Stats | null; onChange: () =
     [saved, setSaved] = useState(false),
     [busy, setBusy] = useState(false);
   useEffect(() => {
-    api<Config>("/settings")
+    void api<Config>("/settings")
       .then(setConfig)
       .catch((e) => setError(errorText(e)));
   }, []);
-  async function save(e: FormEvent) {
+  async function save(e: FormSubmitEvent) {
     e.preventDefault();
     setBusy(true);
     setError("");

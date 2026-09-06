@@ -1,5 +1,5 @@
 $ErrorActionPreference = 'Stop'
-. (Join-Path $PSScriptRoot '..\scripts\windows-docker.ps1')
+. (Join-Path $PSScriptRoot '..\scripts\platform\windows-docker.ps1')
 
 function Assert-True([bool]$Value, [string]$Message) {
   if (-not $Value) { throw "Assertion failed: $Message" }

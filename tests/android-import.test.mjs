@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { assertValidSource, runAndroidImport } from "../scripts/android-import.mjs";
+import { assertValidSource, runAndroidImport } from "../scripts/import/android-import.mjs";
 
 test("assertValidSource 校验手机目录", () => {
   assert.throws(() => assertValidSource("relative/path"), /绝对路径/);

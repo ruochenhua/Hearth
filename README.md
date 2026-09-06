@@ -30,11 +30,11 @@
 在本项目目录运行：
 
 ```powershell
-node scripts/setup.mjs
+node scripts/maintenance/setup.mjs
 docker compose up -d --build
 ```
 
-不同系统都使用同一个浏览器控制中心，不把 WinForms/PowerShell 当成产品界面：Windows 双击 `Start-Hearth.cmd`，macOS 双击 `Start-Hearth.command`，Linux 运行 `Start-Hearth.sh`。三个入口最终都调用同一个 `scripts/launch-control.mjs`，自动启动本机控制代理、启动相册并打开 `http://127.0.0.1:3090`。Windows 启动时会自动创建只允许本地子网访问 TCP 3080 的防火墙规则，首次修复会请求一次管理员权限；Linux 使用系统的 `sudo`/`ufw`/`firewalld` 权限机制，macOS 交给 Docker Desktop 的网络权限处理。不会配置公网端口转发，也不会关闭系统防火墙。需要停止时，三个系统分别运行对应的 `Stop-Hearth` 文件，它们都调用同一个 `scripts/stop-album.mjs`。
+不同系统都使用同一个浏览器控制中心，不把 WinForms/PowerShell 当成产品界面：Windows 双击 `Start-Hearth.cmd`，macOS 双击 `Start-Hearth.command`，Linux 运行 `Start-Hearth.sh`。三个入口最终都调用同一个 `scripts/runtime/launch-control.mjs`，自动启动本机控制代理、启动相册并打开 `http://127.0.0.1:3090`。Windows 启动时会自动创建只允许本地子网访问 TCP 3080 的防火墙规则，首次修复会请求一次管理员权限；Linux 使用系统的 `sudo`/`ufw`/`firewalld` 权限机制，macOS 交给 Docker Desktop 的网络权限处理。不会配置公网端口转发，也不会关闭系统防火墙。需要停止时，三个系统分别运行对应的 `Stop-Hearth` 文件，它们都调用同一个 `scripts/runtime/stop-album.mjs`。
 
 `Start-Hearth-GUI.vbs` 和旧的 PowerShell 控制中心脚本保留为 Windows 兼容备用方式；日常使用优先双击 `Start-Hearth.cmd`。后续发布 GitHub Release 时，可以把这个统一入口和 Node 运行时分别封装成 Windows、macOS、Linux 安装包。
 
@@ -116,7 +116,7 @@ npm run android -- --serial DEVICE_SERIAL --source /sdcard/DCIM
 
 默认“所有媒体”指 `/sdcard` 下当前 ADB 授权可读的支持格式，不包括云端占位文件、其他应用的私有沙盒、无权限目录或另一个独立挂载的 SD 卡；额外 SD 卡可通过 `--source /storage/卡号/...` 指定。大图库首次检查需要时间。脚本每轮的发现、传输和错误显示在电脑终端；文件落入 `inbox` 后的整理进度显示在网页。
 
-可用 Windows 任务计划程序在登录时启动 `node --env-file=.env scripts/android-import.mjs --watch 60`，工作目录设为本项目目录。ADB 桥接运行在宿主电脑上，不需要向 Linux 容器透传 USB。
+可用 Windows 任务计划程序在登录时启动 `node --env-file=.env scripts/import/android-import.mjs --watch 60`，工作目录设为本项目目录。ADB 桥接运行在宿主电脑上，不需要向 Linux 容器透传 USB。
 
 也可以使用你已有的安卓同步工具把手机目录同步到 `inbox`；相册每 60 秒扫描一次（管理页面可改为 15–3600 秒）。稳定不足 10 秒、隐藏文件、符号链接和不支持的扩展名会被跳过。首次导入后，`inbox` 仍占用磁盘空间；确认备份和相册原片完整后，是否清理入口目录由你自行决定。
 
@@ -132,7 +132,7 @@ npm run android -- --serial DEVICE_SERIAL --source /sdcard/DCIM
 
 ## 离线地理编码数据
 
-`server/geo/counties.json`（全国 2875 个区县边界，GCJ-02 坐标，约 16 MB）由 `scripts/build-geo-data.mjs` 从阿里云 DataV 公开边界数据生成并随项目分发；重新生成或更新边界时运行 `node scripts/build-geo-data.mjs`。EXIF GPS（WGS-84）在查询前自动转换到同一坐标系；查询完全在本地进行，不发送任何坐标到外部服务。已有照片可用 `docker compose exec album node server/backfill-location.mjs` 回填缺失的地点（只补空缺，不覆盖手动填写的内容）。
+`server/src/geo/counties.json`（全国 2875 个区县边界，GCJ-02 坐标，约 16 MB）由 `scripts/maintenance/build-geo-data.mjs` 从阿里云 DataV 公开边界数据生成并随项目分发；重新生成或更新边界时运行 `node scripts/maintenance/build-geo-data.mjs`。EXIF GPS（WGS-84）在查询前自动转换到同一坐标系；查询完全在本地进行，不发送任何坐标到外部服务。已有照片可用 `docker compose exec album node server/cli/backfill-location.mjs` 回填缺失的地点（只补空缺，不覆盖手动填写的内容）。
 
 ## 更新、备份和恢复
 
@@ -181,7 +181,7 @@ npm run backup -- --local-stopped
 需要 Node 24.x、FFmpeg 和 FFprobe 在 PATH 中。可通过 `.env` 的 `FFMPEG_PATH`、`FFPROBE_PATH` 指定可执行文件绝对路径。
 
 ```powershell
-node scripts/setup.mjs
+node scripts/maintenance/setup.mjs
 npm ci
 npm --prefix web ci
 npm run build

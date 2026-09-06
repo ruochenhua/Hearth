@@ -15,6 +15,7 @@ services:
       TZ: ${TZ:-Asia/Shanghai}
       DATA_DIR: /data
       IMPORT_DIR: /import
+      ALBUM_LAN_ADDRESSES: ${ALBUM_LAN_ADDRESSES:-}
       PORT: 3080
     volumes:
       - ${DATA_DIR:-./data}:/data

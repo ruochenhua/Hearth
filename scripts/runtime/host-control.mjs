@@ -3,12 +3,22 @@ import os from 'node:os';
 import path from 'node:path';
 import { execFile } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
+import { localIpv4Addresses } from './network.mjs';
 
-const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 const port = Number(process.env.MYMOMENT_CONTROL_PORT || 3090);
 const run = (file, args, options = {}) => new Promise((resolve, reject) => execFile(file, args, { cwd: root, windowsHide: true, timeout: 900000, ...options }, (error, stdout, stderr) => error ? reject(new Error((stderr || stdout || error.message).trim())) : resolve(stdout.trim())));
-const localAddresses = () => Object.values(os.networkInterfaces()).flat().filter(Boolean).filter(x => x.family === 'IPv4' && !x.internal).map(x => x.address);
-const json = (res, status, value) => { res.writeHead(status, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' }); res.end(JSON.stringify(value)); };
+const localAddresses = () => localIpv4Addresses(os.networkInterfaces());
+const controlOrigins = new Set(['http://localhost:3080', 'http://127.0.0.1:3080', 'http://[::1]:3080']);
+const json = (req, res, status, value) => {
+  const origin = req.headers.origin;
+  if (origin && controlOrigins.has(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Vary', 'Origin');
+  }
+  res.writeHead(status, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' });
+  res.end(JSON.stringify(value));
+};
 const readBody = req => new Promise((resolve, reject) => { let body = ''; req.on('data', chunk => { body += chunk; if (body.length > 10000) reject(new Error('request too large')); }); req.on('end', () => resolve(body ? JSON.parse(body) : {})); req.on('error', reject); });
 const health = async () => { try { const response = await fetch('http://127.0.0.1:3080/api/health'); return response.ok; } catch { return false; } };
 const waitForHealth = async (timeoutMs = 120000) => {
@@ -21,7 +31,7 @@ const waitForHealth = async (timeoutMs = 120000) => {
 };
 async function firewall(action) {
   if (process.platform === 'win32') {
-    const script = path.join(root, 'scripts', 'windows-start.ps1');
+    const script = path.join(root, 'scripts', 'platform', 'windows-start.ps1');
     await run('powershell.exe', ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', script, '-NoBrowser', '-NoPause'], { windowsHide: false });
     return 'Windows local-subnet firewall rule verified or repaired.';
   }
@@ -33,7 +43,7 @@ async function firewall(action) {
   return 'macOS 使用 Docker Desktop 的网络权限机制，无需单独配置端口规则。';
 }
 async function start() {
-  if (process.platform === 'win32') { await run('powershell.exe', ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', path.join(root, 'scripts', 'windows-start.ps1'), '-ForceRecreate', '-NoBrowser', '-NoPause'], { windowsHide: false }); }
+  if (process.platform === 'win32') { await run('powershell.exe', ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', path.join(root, 'scripts', 'platform', 'windows-start.ps1'), '-ForceRecreate', '-NoBrowser', '-NoPause'], { windowsHide: false }); }
   else { await run('docker', ['compose', 'up', '-d', '--build', '--wait', '--wait-timeout', '90']); }
   const running = await waitForHealth();
   if (!running) throw new Error('The album did not become ready. Check Docker Desktop and the control center message.');
@@ -46,11 +56,11 @@ const page = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta n
 const server = http.createServer(async (req, res) => {
   try {
     if (req.method === 'GET' && req.url === '/') { res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' }); res.end(page); return; }
-    if (req.method === 'GET' && req.url === '/api/status') { json(res, 200, await status()); return; }
-    if (req.method === 'POST' && req.url === '/api/start') { await readBody(req); json(res, 200, await start()); return; }
-    if (req.method === 'POST' && req.url === '/api/stop') { await readBody(req); json(res, 200, await stop()); return; }
-    if (req.method === 'POST' && req.url === '/api/repair') { await readBody(req); json(res, 200, { message: await firewall('repair') }); return; }
-    json(res, 404, { error: 'Not found' });
-  } catch (error) { json(res, error.status || 500, { error: error.message }); }
+    if (req.method === 'GET' && req.url === '/api/status') { json(req, res, 200, await status()); return; }
+    if (req.method === 'POST' && req.url === '/api/start') { await readBody(req); json(req, res, 200, await start()); return; }
+    if (req.method === 'POST' && req.url === '/api/stop') { await readBody(req); json(req, res, 200, await stop()); return; }
+    if (req.method === 'POST' && req.url === '/api/repair') { await readBody(req); json(req, res, 200, { message: await firewall('repair') }); return; }
+    json(req, res, 404, { error: 'Not found' });
+  } catch (error) { json(req, res, error.status || 500, { error: error.message }); }
 });
 server.listen(port, '127.0.0.1', () => console.log(`围炉控制面板: http://127.0.0.1:${port}`));

@@ -68,6 +68,10 @@ if (-not $dockerProbe.Ready) {
 
 $upArgs = @('compose','up','-d','--build','--wait','--wait-timeout','90')
 if ($ForceRecreate) { $upArgs += '--force-recreate' }
+# Docker cannot enumerate the host's Wi-Fi adapter from inside the container.
+# Pass the default-route address explicitly so QR generation remains stable.
+if ($wifiAddress) { $env:ALBUM_LAN_ADDRESSES = $wifiAddress.IPAddress }
+else { Remove-Item Env:ALBUM_LAN_ADDRESSES -ErrorAction SilentlyContinue }
 & docker @upArgs
 if ($LASTEXITCODE -ne 0) { throw '相册容器启动失败，请在 Docker Desktop 中查看围炉日志。' }
 
@@ -81,9 +85,7 @@ for ($i = 0; $i -lt 30; $i++) {
 }
 if (-not $healthy) { throw 'The album container started but health check failed. Check the Docker Desktop logs.' }
 
-$wifi = Get-NetIPAddress -AddressFamily IPv4 -Type Unicast -ErrorAction SilentlyContinue |
-  Where-Object { $_.IPAddress -match '^192\.168\.' -and $_.IPAddress -notmatch '\.1$' } |
-  Select-Object -First 1 -ExpandProperty IPAddress
+$wifi = $wifiAddress.IPAddress
 Write-Host ''
 Write-Host '围炉已就绪。' -ForegroundColor Green
 Write-Host 'Local: http://localhost:3080'

@@ -20,7 +20,16 @@ const formatBytes = (n: number) =>
       ? `${(n / 1024 ** 2).toFixed(1)} MB`
       : `${Math.round(n / 1024)} KB`;
 const extOf = (name: string) => name.slice(name.lastIndexOf(".")).toLowerCase();
-const isIpv4 = (host: string) => /^\d{1,3}(\.\d{1,3}){3}$/.test(host);
+const isIpv4 = (host: string) =>
+  /^\d{1,3}(\.\d{1,3}){3}$/.test(host) &&
+  host.split(".").every((octet) => Number(octet) <= 255);
+const addressesFrom = async (response: Response) => {
+  if (!response.ok) return [];
+  const payload: unknown = await response.json();
+  if (!payload || typeof payload !== "object" || !("addresses" in payload)) return [];
+  const addresses = payload.addresses;
+  return Array.isArray(addresses) ? addresses.filter((address): address is string => typeof address === "string") : [];
+};
 
 type UploadFile = { file: File; size: number };
 type Progress = {
@@ -41,6 +50,7 @@ export default function MobileUpload() {
   const [progress, setProgress] = useState<Progress | null>(null);
   const [thumbs, setThumbs] = useState<Thumb[]>([]);
   const [links, setLinks] = useState<string[]>([]);
+  const [networkLoading, setNetworkLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const busyRef = useRef(false);
   const stopRef = useRef(false);
@@ -49,7 +59,9 @@ export default function MobileUpload() {
   const thumbsRef = useRef<Thumb[]>([]);
   const lastPaintRef = useRef(0);
 
-  const isMobile = typeof window !== "undefined" && window.matchMedia("(pointer: coarse)").matches;
+  const isMobile =
+    typeof navigator !== "undefined" &&
+    /Android|iPhone|iPad|iPod|Windows Phone/i.test(navigator.userAgent);
 
   const updateThumbs = useCallback((fn: (ts: Thumb[]) => Thumb[]) => {
     setThumbs((ts) => {
@@ -59,32 +71,51 @@ export default function MobileUpload() {
     });
   }, []);
 
+  const loadNetwork = useCallback(async () => {
+    if (isMobile) return;
+    setNetworkLoading(true);
+    try {
+      let addresses: string[] = [];
+      try {
+        const response = await fetch("/api/network", {
+          cache: "no-store",
+          headers: { "X-MyMoment": "1" },
+        });
+        addresses = await addressesFrom(response);
+      } catch {
+        // The control agent below is an optional fallback.
+      }
+      if (!addresses.length) {
+        try {
+          const response = await fetch("http://127.0.0.1:3090/api/status", { cache: "no-store" });
+          addresses = await addressesFrom(response);
+        } catch {
+          // The album can also run without the local control agent.
+        }
+      }
+      const here = window.location.hostname;
+      const port = window.location.port;
+      const candidates = [
+        ...(isIpv4(here) && here !== "127.0.0.1" ? [here] : []),
+        ...addresses.filter((address): address is string => isIpv4(address) && address !== "127.0.0.1"),
+      ];
+      const urls = [...new Set(candidates)]
+        .slice(0, 3)
+        .map(
+          (ip) =>
+            `${window.location.protocol}//${ip}${port ? `:${port}` : ""}/?assistant=upload`,
+        );
+      setLinks(urls);
+    } finally {
+      setNetworkLoading(false);
+    }
+  }, [isMobile]);
+
   useEffect(() => {
     document.title = "围炉 · 手机快传";
-    if (!isMobile)
-      fetch("/api/network", { headers: { "X-MyMoment": "1" } })
-        .then(async (r): Promise<{ addresses: string[] }> =>
-          r.ok ? r.json() : { addresses: [] },
-        )
-        .then(async ({ addresses }: { addresses: string[] }) => {
-          const here = window.location.hostname;
-          const port = window.location.port;
-          const candidates = [
-            ...(isIpv4(here) && here !== "127.0.0.1" ? [here] : []),
-            ...addresses,
-          ];
-          const urls = [...new Set(candidates)]
-            .slice(0, 3)
-            .map(
-              (ip) =>
-                `${window.location.protocol}//${ip}${port ? `:${port}` : ""}/?assistant=upload`,
-            );
-          setLinks(urls);
-        })
-        .catch(() => {});
+    void loadNetwork();
     return () => thumbsRef.current.forEach((t) => URL.revokeObjectURL(t.url));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [loadNetwork]);
 
   useEffect(() => {
     if (phase !== "uploading") return;
@@ -115,7 +146,8 @@ export default function MobileUpload() {
         }
         try {
           const r = JSON.parse(xhr.responseText);
-          xhr.status < 300 ? resolve() : reject(new Error(r.error || "上传失败"));
+          if (xhr.status < 300) resolve();
+          else reject(new Error(r.error || "上传失败"));
         } catch {
           reject(new Error("服务器返回异常"));
         }
@@ -240,6 +272,10 @@ export default function MobileUpload() {
               让家人手机连家里 Wi-Fi，用手机浏览器打开这台电脑的局域网地址（形如
               <code>192.168.x.x:3080</code>）并登录；先这样打开过一次后，刷新本页就会自动出现扫码入口。
             </p>
+            <Button variant="outline" size="sm" onClick={() => void loadNetwork()} disabled={networkLoading}>
+              <RefreshCcw className={networkLoading ? "spin" : undefined} />
+              {networkLoading ? "正在获取地址…" : "重新获取局域网地址"}
+            </Button>
           </div>
         </section>
       )}

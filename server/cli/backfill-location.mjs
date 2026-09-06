@@ -1,7 +1,7 @@
 // 为已有媒体回填行政区划位置：有 GPS 坐标但 location 为空的记录重新定位。
-// 用法：node server/backfill-location.mjs   （容器内：docker compose exec album node server/backfill-location.mjs）
-import { openDatabase } from "./db.mjs";
-import { locate } from "./geo.mjs";
+// 用法：node server/cli/backfill-location.mjs   （容器内：docker compose exec album node server/cli/backfill-location.mjs）
+import { openDatabase } from "../src/db.mjs";
+import { locate } from "../src/geo.mjs";
 
 const root = process.env.DATA_DIR || "data";
 const db = openDatabase(root);

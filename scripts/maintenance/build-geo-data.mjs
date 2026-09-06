@@ -1,10 +1,10 @@
-// 一次性生成 server/geo/counties.json：从阿里云 DataV 拉取全国省/市/区县边界（GCJ-02 坐标）并压缩。
-// 重新生成：node scripts/build-geo-data.mjs
+// 一次性生成 server/src/geo/counties.json：从阿里云 DataV 拉取全国省/市/区县边界（GCJ-02 坐标）并压缩。
+// 重新生成：node scripts/maintenance/build-geo-data.mjs
 import fs from "node:fs";
 import path from "node:path";
 
 const BASE = "https://geo.datav.aliyun.com/areas_v3/bound/";
-const OUT = path.resolve("server/geo/counties.json");
+const OUT = path.resolve("server/src/geo/counties.json");
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 async function get(adcode) {

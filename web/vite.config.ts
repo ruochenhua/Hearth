@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 // Local disk + Docker deployment: serve a static browser build from the Node API.
 export default defineConfig({
   plugins: [react()],
-  resolve: { alias: { '@': fileURLToPath(new URL('.', import.meta.url)) } },
+  resolve: { alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) } },
   css: { postcss: { plugins: [tailwindcss()] } },
   server: {
     host: '0.0.0.0',

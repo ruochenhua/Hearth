@@ -4,8 +4,8 @@ Add-Type -AssemblyName System.Drawing
 
 $root = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path)
 Set-Location -LiteralPath $root
-$startScript = Join-Path $root 'scripts\windows-start.ps1'
-$stopScript = Join-Path $root 'scripts\windows-stop.ps1'
+$startScript = Join-Path $root 'scripts\platform\windows-start.ps1'
+$stopScript = Join-Path $root 'scripts\platform\windows-stop.ps1'
 $envPath = Join-Path $root '.env'
 $accessPath = Join-Path $root '.local-access.txt'
 

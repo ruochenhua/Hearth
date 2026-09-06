@@ -11,7 +11,14 @@ import { Importer, extensions, runProcess } from "./importer.mjs";
 
 const digest = (value) => createHash("sha256").update(value).digest("hex");
 const bad = (message, status = 400) => Object.assign(new Error(message), { status });
-const isIpv4 = (value) => /^\d{1,3}(\.\d{1,3}){3}$/.test(value);
+const isIpv4 = (value) => {
+  if (typeof value !== "string") return false;
+  const octets = value.split(".");
+  return (
+    octets.length === 4 &&
+    octets.every((octet) => /^\d{1,3}$/.test(octet) && Number(octet) <= 255)
+  );
+};
 // Docker/容器内部段不作为局域网候选（172.17/16 是网桥，10/8 与 192.168.65/24 常见于容器环境）
 const isInternalIp = (ip) =>
   ip === "127.0.0.1" ||
@@ -24,6 +31,11 @@ export async function createApplication(config) {
     throw new Error("请先运行 npm run setup，设置至少 12 位的相册密码。");
   const dataDir = path.resolve(config.dataDir),
     importDir = path.resolve(config.importDir);
+  const configuredAddresses = [
+    ...new Set(
+      (config.networkAddresses || []).filter((ip) => isIpv4(ip) && ip !== "127.0.0.1"),
+    ),
+  ];
   const overlap = (a, b) => {
     const r = path.relative(a, b);
     return !r || (!r.startsWith("..") && !path.isAbsolute(r));
@@ -55,7 +67,8 @@ export async function createApplication(config) {
           styleSrc: ["'self'", "'unsafe-inline'"],
           imgSrc: ["'self'", "blob:", "data:"],
           mediaSrc: ["'self'", "blob:"],
-          connectSrc: ["'self'"],
+          // The local control agent supplies host LAN addresses when Docker cannot see them.
+          connectSrc: ["'self'", "http://127.0.0.1:3090", "http://localhost:3090"],
           upgradeInsecureRequests: null,
         },
       },
@@ -397,7 +410,7 @@ export async function createApplication(config) {
           .filter((ip) => !isInternalIp(ip)),
       ),
     ];
-    res.json({ addresses: [...new Set([...observedHosts, ...interfaceAddrs])] });
+    res.json({ addresses: [...new Set([...configuredAddresses, ...observedHosts, ...interfaceAddrs])] });
   });
   app.get("/api/stats", async (_req, res) => {
     const totals = db

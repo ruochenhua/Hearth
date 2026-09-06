@@ -136,7 +136,7 @@ export default function PhoneImport() {
       deviceRef.current = device;
       setDeviceName(device.name || device.serial);
       setPhase("connected");
-      transport.disconnected.then(() => resetToGuide("手机已断开连接。"));
+      void transport.disconnected.then(() => resetToGuide("手机已断开连接。"));
     } catch (e) {
       const message = e instanceof Error ? e.message : String(e);
       if (/claim|busy|Unable to|in use|already/i.test(message))
@@ -246,7 +246,8 @@ export default function PhoneImport() {
         }
         try {
           const r = JSON.parse(xhr.responseText);
-          xhr.status < 300 ? resolve() : reject(new Error(r.error || "上传失败"));
+          if (xhr.status < 300) resolve();
+          else reject(new Error(r.error || "上传失败"));
         } catch {
           reject(new Error("服务器返回异常"));
         }

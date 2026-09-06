@@ -7,13 +7,15 @@
     "node": ">=24.13.0 <25"
   },
   "scripts": {
-    "setup": "node scripts/setup.mjs",
+    "setup": "node scripts/maintenance/setup.mjs",
     "dev": "node --env-file=.env --watch server/index.mjs",
     "start": "node --env-file=.env server/index.mjs",
     "build": "npm --prefix web run build",
     "test": "node --test --test-concurrency=1 tests/*.test.mjs",
-    "android": "node --env-file=.env scripts/android-import.mjs",
-    "backup": "node --env-file=.env scripts/backup.mjs"
+    "android": "node --env-file=.env scripts/import/android-import.mjs",
+    "backup": "node --env-file=.env scripts/maintenance/backup.mjs",
+    "check": "npm test && npm run build && npm --prefix web run lint",
+    "check:compose": "docker compose config --quiet"
   },
   "dependencies": {
     "exifr": "7.1.3",

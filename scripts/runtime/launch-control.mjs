@@ -2,9 +2,9 @@ import { spawn } from 'node:child_process';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 const url = `http://127.0.0.1:${process.env.MYMOMENT_CONTROL_PORT || 3090}`;
-const agent = path.join(root, 'scripts', 'host-control.mjs');
+const agent = path.join(root, 'scripts', 'runtime', 'host-control.mjs');
 
 async function isReady() {
   try { return (await fetch(`${url}/api/status`)).ok; } catch { return false; }
