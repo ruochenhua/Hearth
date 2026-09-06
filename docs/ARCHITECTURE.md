@@ -29,7 +29,10 @@ the product can keep one startup flow on Windows, macOS, and Linux.
 ├── scripts/
 │   ├── import/               # external media import adapters
 │   ├── maintenance/          # setup, backup, and generated-data tasks
-│   ├── platform/             # Windows-specific adapters
+│   ├── platform/             # user-facing OS launchers and host adapters
+│   │   ├── windows/           # CMD, PowerShell, VBS and Docker helpers
+│   │   ├── macos/             # Finder-friendly .command launchers
+│   │   └── linux/             # shell launchers
 │   └── runtime/              # cross-platform launcher/control agent
 ├── tests/                    # Node integration and platform regression tests
 ├── data/                     # runtime-only media, SQLite, and generated files

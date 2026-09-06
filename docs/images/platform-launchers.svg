@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 430" role="img" aria-labelledby="title desc">
+  <title id="title">围炉跨平台启动结构</title>
+  <desc id="desc">Windows、macOS 和 Linux 使用各自的轻量入口，最终共享同一个运行时控制中心。</desc>
+  <defs>
+    <linearGradient id="paper" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fffdf9"/>
+      <stop offset="1" stop-color="#f2e9dc"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="160%">
+      <feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#4e3324" flood-opacity=".12"/>
+    </filter>
+  </defs>
+  <rect width="1200" height="430" rx="28" fill="#f5eee4"/>
+  <text x="68" y="68" fill="#8b674d" font-family="Arial,'Microsoft YaHei',sans-serif" font-size="18" letter-spacing="4">ONE RUNTIME · THREE DOORS</text>
+  <text x="68" y="108" fill="#3f2a1a" font-family="Georgia,serif" font-size="34" font-weight="700">ONE RUNTIME · THREE DOORS</text>
+  <g filter="url(#shadow)">
+    <rect x="68" y="156" width="290" height="168" rx="20" fill="url(#paper)"/>
+    <rect x="455" y="156" width="290" height="168" rx="20" fill="url(#paper)"/>
+    <rect x="842" y="156" width="290" height="168" rx="20" fill="url(#paper)"/>
+  </g>
+  <g fill="#3f2a1a" font-family="Arial,'Microsoft YaHei',sans-serif" text-anchor="middle">
+    <text x="213" y="211" font-size="25" font-weight="700">WINDOWS</text><text x="213" y="245" font-size="17" fill="#8b674d">start.cmd</text><text x="213" y="278" font-size="15" fill="#a06a2f">CONTROL CENTER</text>
+    <text x="600" y="211" font-size="25" font-weight="700">MACOS</text><text x="600" y="245" font-size="17" fill="#8b674d">start.command</text><text x="600" y="278" font-size="15" fill="#a06a2f">FINDER LAUNCHER</text>
+    <text x="987" y="211" font-size="25" font-weight="700">LINUX</text><text x="987" y="245" font-size="17" fill="#8b674d">start.sh</text><text x="987" y="278" font-size="15" fill="#a06a2f">SHELL LAUNCHER</text>
+  </g>
+  <path d="M213 342v32h774v-32M600 342v32M987 342v32" stroke="#a06a2f" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="340" y="366" width="520" height="48" rx="24" fill="#3f2a1a"/>
+  <text x="600" y="398" fill="#fffaf2" text-anchor="middle" font-family="Arial,sans-serif" font-size="18" font-weight="700">scripts/runtime · START · STOP · STATUS · LAN</text>
+</svg>

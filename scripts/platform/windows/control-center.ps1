@@ -2,10 +2,10 @@ $ErrorActionPreference = 'Stop'
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
 
-$root = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path)
+$root = (Resolve-Path (Join-Path $PSScriptRoot '..\..\..')).Path
 Set-Location -LiteralPath $root
-$startScript = Join-Path $root 'scripts\platform\windows-start.ps1'
-$stopScript = Join-Path $root 'scripts\platform\windows-stop.ps1'
+$startScript = Join-Path $PSScriptRoot 'start.ps1'
+$stopScript = Join-Path $PSScriptRoot 'stop.ps1'
 $envPath = Join-Path $root '.env'
 $accessPath = Join-Path $root '.local-access.txt'
 

@@ -31,7 +31,7 @@ const waitForHealth = async (timeoutMs = 120000) => {
 };
 async function firewall(action) {
   if (process.platform === 'win32') {
-    const script = path.join(root, 'scripts', 'platform', 'windows-start.ps1');
+    const script = path.join(root, 'scripts', 'platform', 'windows', 'start.ps1');
     await run('powershell.exe', ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', script, '-NoBrowser', '-NoPause'], { windowsHide: false });
     return 'Windows local-subnet firewall rule verified or repaired.';
   }
@@ -43,7 +43,7 @@ async function firewall(action) {
   return 'macOS 使用 Docker Desktop 的网络权限机制，无需单独配置端口规则。';
 }
 async function start() {
-  if (process.platform === 'win32') { await run('powershell.exe', ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', path.join(root, 'scripts', 'platform', 'windows-start.ps1'), '-ForceRecreate', '-NoBrowser', '-NoPause'], { windowsHide: false }); }
+  if (process.platform === 'win32') { await run('powershell.exe', ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', path.join(root, 'scripts', 'platform', 'windows', 'start.ps1'), '-ForceRecreate', '-NoBrowser', '-NoPause'], { windowsHide: false }); }
   else { await run('docker', ['compose', 'up', '-d', '--build', '--wait', '--wait-timeout', '90']); }
   const running = await waitForHealth();
   if (!running) throw new Error('The album did not become ready. Check Docker Desktop and the control center message.');

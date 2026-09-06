@@ -1652,7 +1652,7 @@ function SettingsView({ stats, onChange }: { stats: Stats | null; onChange: () =
             </div>
           </div>
           <p className="muted">
-            操作步骤与恢复说明见项目 README。家庭成员共用相册密码，均可上传、编辑和评论。
+            操作步骤与恢复说明见项目维护手册。家庭成员共用相册密码，均可上传、编辑和评论。
           </p>
         </section>
       </div>

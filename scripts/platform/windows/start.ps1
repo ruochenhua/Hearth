@@ -6,9 +6,9 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
-$projectRoot = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path)
+$projectRoot = (Resolve-Path (Join-Path $PSScriptRoot '..\..\..')).Path
 Set-Location -LiteralPath $projectRoot
-. (Join-Path $PSScriptRoot 'windows-docker.ps1')
+. (Join-Path $PSScriptRoot 'docker.ps1')
 
 # This launcher elevates only the setup step. The firewall rule is narrow:
 # TCP 3080 from the local subnet, never a public port-forward rule.

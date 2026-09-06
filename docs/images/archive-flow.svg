@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 480" role="img" aria-labelledby="title desc">
+  <title id="title">围炉家庭影像归档流程</title>
+  <desc id="desc">手机和电脑把照片送回家，围炉在本地整理并供家人回看。</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f8f3eb"/>
+      <stop offset="1" stop-color="#eee3d2"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="160%">
+      <feDropShadow dx="0" dy="12" stdDeviation="14" flood-color="#5a3824" flood-opacity=".12"/>
+    </filter>
+  </defs>
+  <rect width="1200" height="480" rx="28" fill="url(#bg)"/>
+  <circle cx="1060" cy="50" r="120" fill="#d9b183" opacity=".2"/>
+  <circle cx="80" cy="430" r="150" fill="#9bb4a1" opacity=".16"/>
+  <text x="72" y="72" fill="#8b674d" font-family="Arial,'Microsoft YaHei',sans-serif" font-size="18" letter-spacing="4">ONE HOME · MANY DAYS</text>
+  <text x="72" y="112" fill="#3f2a1a" font-family="Georgia,serif" font-size="34" font-weight="700">FROM MANY PLACES, BACK HOME</text>
+  <g filter="url(#shadow)">
+    <rect x="72" y="170" width="286" height="190" rx="22" fill="#fffdf9"/>
+    <rect x="457" y="170" width="286" height="190" rx="22" fill="#fffdf9"/>
+    <rect x="842" y="170" width="286" height="190" rx="22" fill="#3f2a1a"/>
+  </g>
+  <g transform="translate(132 205)" stroke="#a06a2f" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="18" y="35" width="90" height="74" rx="8"/>
+    <path d="M8 35 63 4l55 31M44 109V70h38v39"/>
+    <circle cx="96" cy="20" r="12" fill="#d9b183" stroke="none"/>
+  </g>
+  <text x="104" y="332" fill="#3f2a1a" font-family="Arial,sans-serif" font-size="24" font-weight="700">COLLECT</text>
+  <text x="104" y="358" fill="#8b674d" font-family="Arial,sans-serif" font-size="16">PHONE / DESKTOP</text>
+  <path d="M382 265h50" stroke="#a06a2f" stroke-width="4" stroke-linecap="round"/><path d="m422 250 18 15-18 15" fill="none" stroke="#a06a2f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <g transform="translate(527 205)" stroke="#a06a2f" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M14 49h112M14 76h112M14 103h112"/>
+    <rect x="26" y="9" width="88" height="110" rx="10"/>
+    <circle cx="49" cy="49" r="5" fill="#d9b183" stroke="none"/><circle cx="49" cy="76" r="5" fill="#d9b183" stroke="none"/><circle cx="49" cy="103" r="5" fill="#d9b183" stroke="none"/>
+  </g>
+  <text x="489" y="332" fill="#3f2a1a" font-family="Arial,sans-serif" font-size="24" font-weight="700">ORGANIZE</text>
+  <text x="489" y="358" fill="#8b674d" font-family="Arial,sans-serif" font-size="16">LOCAL ARCHIVE</text>
+  <path d="M767 265h50" stroke="#a06a2f" stroke-width="4" stroke-linecap="round"/><path d="m807 250 18 15-18 15" fill="none" stroke="#a06a2f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <g transform="translate(922 204)" stroke="#f5eadb" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="8" y="26" width="112" height="86" rx="10"/>
+    <path d="m18 98 30-30 20 19 18-20 25 31M39 49h1"/>
+    <circle cx="39" cy="49" r="8"/>
+  </g>
+  <text x="888" y="332" fill="#fffaf2" font-family="Arial,sans-serif" font-size="24" font-weight="700">REVISIT</text>
+  <text x="888" y="358" fill="#d9bda2" font-family="Arial,sans-serif" font-size="16">FAMILY ALBUM</text>
+</svg>

@@ -2237,3 +2237,235 @@ progress::-moz-progress-bar {
     padding: 30px 25px;
   }
 }
+
+/* Hearth polish：让登录页和相册工作区共享同一套“家里的影像馆”气质。 */
+:root {
+  --background: #f6f0e7;
+  --foreground: #432920;
+  --card: #fffdf9;
+  --border: #e7ddcf;
+}
+
+body {
+  background-color: #f6f0e7;
+  background-image:
+    radial-gradient(circle at 12% 8%, #d9b18318, transparent 30rem),
+    radial-gradient(circle at 88% 78%, #9bb4a114, transparent 34rem);
+}
+
+.boot {
+  background: #f6f0e7;
+}
+
+.brand-mark {
+  box-shadow: 0 8px 18px #3f2a1a20;
+}
+
+.album-sidebar [data-slot="sidebar-inner"] {
+  background: linear-gradient(180deg, #f1e8da 0%, #ede3d4 100%);
+  border-right-color: #e0d2c1;
+}
+
+[data-slot="sidebar-header"] {
+  padding-top: 30px;
+}
+
+.nav-item {
+  border: 1px solid transparent;
+  transition: background 180ms ease, border-color 180ms ease, color 180ms ease, transform 180ms ease;
+}
+
+.nav-item.active {
+  background: #fffaf1;
+  border-color: #e2d1bb;
+  box-shadow: 0 7px 18px #5a38240d;
+}
+
+.nav-item:hover {
+  background: #f8f0e3;
+  border-color: #eadbc8;
+  transform: translateX(2px);
+}
+
+.workspace {
+  background: #fbf8f2;
+}
+
+.topbar {
+  background: #fbf8f2e8;
+  border-bottom-color: #e8dfd2;
+  box-shadow: 0 5px 20px #5a382408;
+  backdrop-filter: blur(14px);
+}
+
+.private-badge {
+  background: #fffdf980;
+  border-color: #e4d8c9;
+}
+
+.main-content {
+  background: linear-gradient(180deg, #fbf8f2 0%, #f9f4ec 100%);
+}
+
+.page-heading h1 {
+  font-family: "Noto Serif SC", "STSong", "Songti SC", serif;
+  font-weight: 600;
+  letter-spacing: -0.04em;
+}
+
+.page-heading p {
+  color: #806c5e;
+}
+
+.gallery-toolbar {
+  border-bottom-color: #e4d9ca;
+}
+
+.search {
+  background: #fffdf9;
+  border-color: #e2d7c9;
+  box-shadow: 0 6px 18px #5a382408;
+}
+
+.photo-card {
+  border: 1px solid #eee3d5;
+  border-radius: 14px;
+  box-shadow: 0 9px 24px #5a38240c;
+}
+
+.photo-card:hover,
+.photo-card:focus-visible {
+  border-color: #d9b183;
+  box-shadow: 0 14px 30px #5a382421;
+}
+
+.empty-state {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, #fffdf9 0%, #f7efe3 100%);
+  border-color: #dfd1bf;
+  box-shadow: 0 12px 30px #5a38240b;
+}
+
+.empty-state::before {
+  position: absolute;
+  inset: 0;
+  background: url("/brand/me-hero.png") 76% 50% / 560px auto no-repeat;
+  content: "";
+  opacity: 0.08;
+  pointer-events: none;
+}
+
+.empty-state > * {
+  position: relative;
+}
+
+.empty-icon {
+  background: #fffdf9;
+  border-color: #e2d5c4;
+  box-shadow: 0 8px 20px #5a382414;
+}
+
+.album-row:hover {
+  background: #fffaf2;
+}
+
+.folder-card,
+.settings-card,
+.stat-card,
+.job-list {
+  background: #fffdf9;
+  border-color: #e4d8ca;
+  box-shadow: 0 8px 22px #5a382408;
+}
+
+.dropzone,
+.android-guide {
+  background: linear-gradient(135deg, #fffdf9 0%, #f7efe4 100%);
+  border-color: #dfcdb8;
+}
+
+.login-page {
+  gap: 16px;
+  padding: 16px;
+  background: #f6f0e7;
+}
+
+.login-story {
+  position: relative;
+  overflow: hidden;
+  min-height: calc(100vh - 32px);
+  border-radius: 28px;
+  background:
+    linear-gradient(90deg, #35180ed9 0%, #3f2116b8 46%, #3f211659 100%),
+    url("/brand/me-hero.png") center / cover no-repeat;
+  box-shadow: 0 18px 48px #5a382426;
+}
+
+.login-story::after {
+  position: absolute;
+  inset: auto 0 0;
+  height: 36%;
+  background: linear-gradient(transparent, #2b120dd1);
+  content: "";
+  pointer-events: none;
+}
+
+.login-story > * {
+  position: relative;
+  z-index: 1;
+}
+
+.login-story h1 {
+  max-width: 620px;
+  font-family: "Noto Serif SC", "STSong", "Songti SC", serif;
+  font-size: clamp(42px, 4.8vw, 70px);
+  line-height: 1.35;
+  letter-spacing: -0.06em;
+}
+
+.login-form {
+  align-self: center;
+  margin: 16px clamp(12px, 4vw, 70px);
+  padding: clamp(34px, 5vw, 64px) clamp(26px, 5vw, 58px);
+  max-width: 560px;
+  border: 1px solid #e4d8ca;
+  border-radius: 28px;
+  background: #fffdf9e8;
+  box-shadow: 0 18px 48px #5a382417;
+}
+
+.login-form h2 {
+  font-family: "Noto Serif SC", "STSong", "Songti SC", serif;
+  font-size: clamp(30px, 3.2vw, 40px);
+  letter-spacing: -0.05em;
+}
+
+.login-form input {
+  background: #fffefa;
+  border-color: #decfbd;
+}
+
+.login-form > small {
+  padding-top: 20px;
+  border-top: 1px solid #eee4d8;
+}
+
+@media (max-width: 767px) {
+  .login-page {
+    gap: 0;
+    padding: 0;
+  }
+
+  .login-story {
+    min-height: 390px;
+    border-radius: 0 0 26px 26px;
+  }
+
+  .login-form {
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+}
